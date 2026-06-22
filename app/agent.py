@@ -118,12 +118,19 @@ def award_loyalty_points(user_id: str, amount: int) -> str:
 class CustomGemini(Gemini):
     @cached_property
     def api_client(self) -> Client:
-        # Use real API key from environment if available, otherwise fall back to the mock key
+        # Use real API key from environment if available
         api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
-        if not api_key:
-            # Simulated hardcoded API key for security gating demonstration
-            api_key = "AIzaSyD-mock-key-value-12345"
-        return Client(api_key=api_key)
+        if api_key:
+            return Client(api_key=api_key)
+
+        # Fallback to mock key for security scanning, except when running tests where ADC is used
+        mock_key = "AIzaSyD-mock-key-value-12345"
+        import sys
+
+        if "pytest" in sys.modules or os.environ.get("INTEGRATION_TEST") == "TRUE":
+            return super().api_client
+
+        return Client(api_key=mock_key)
 
 
 root_agent = Agent(
