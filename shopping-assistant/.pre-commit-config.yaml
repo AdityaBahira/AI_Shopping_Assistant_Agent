@@ -1,0 +1,14 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+  - repo: local
+    hooks:
+      - id: semgrep
+        name: Semgrep
+        entry: uv run semgrep --config shopping-assistant/.semgrep/rules.yaml --error
+        language: system
+        types: [python]
+        pass_filenames: false
